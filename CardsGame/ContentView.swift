@@ -9,51 +9,55 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        ZStack {
-            Color(.white)
-                .ignoresSafeArea()
-            VStack {
-                Image("room")
-                    .resizable()
-                    .cornerRadius(10)
-                    .aspectRatio(contentMode: /*@START_MENU_TOKEN@*/.fit/*@END_MENU_TOKEN@*/)
-                HStack{
-                    Text("Premium Hotel")
-                        .font(.title)
-                        .fontWeight(.semibold)
-                        .foregroundColor(Color.white)
-                    Spacer()
-                    VStack{
-                        HStack{
-                            Image(systemName: "star.fill")
-                                .foregroundColor(Color.yellow)
-                                .font(.caption)
-                            Image(systemName: "star.fill")
-                                .foregroundColor(Color.yellow)
-                                .font(.caption)
-                            Image(systemName: "star.fill")
-                                .foregroundColor(Color.yellow)
-                                .font(.caption)
-                            Image(systemName: "star.fill")
-                                .foregroundColor(Color.yellow)
-                                .font(.caption)
-                            Image(systemName: "star.fill")
-                                .foregroundColor(Color.yellow)
-                                .font(.caption)
+        NavigationView{
+            ScrollView {
+                ForEach(hotels) { hotel in
+                    NavigationLink(destination: HotelDetailView(hotel: hotel)){
+                        VStack(alignment: .leading){
+                            Image(hotel.picture)
+                                .resizable()
+                                .cornerRadius(10)
+                                .aspectRatio(contentMode: .fit)
+                            HStack{
+                                Text(hotel.name)
+                                    .font(.title)
+                                    .fontWeight(.semibold)
+                                Spacer()
+                                VStack{
+                                    HStack{
+                                        let rating = averageStars(for: hotel)
+                                        let wholeStars = Int(rating)
+                                        let hasHalfStar = (rating - Double(wholeStars)) >= 0.5
+                                        let totalStars = wholeStars + (hasHalfStar ? 1 : 0)
+                                        
+                                        let stars = Array(repeating: "star.fill", count: wholeStars) +
+                                        Array(repeating: "star.lefthalf.fill", count: hasHalfStar ? 1 : 0) +
+                                        Array(repeating: "star", count: 5 - totalStars)
+                                        
+                                        // Loop through the array of star types
+                                        ForEach(0..<stars.count, id: \.self) { index in
+                                            Image(systemName: stars[index])
+                                                .foregroundColor(stars[index] == "star" ? .gray : .yellow)
+                                                .font(.caption)
+                                        }
+                                        
+                                    }
+                                    Text(hotel.reviews?.isEmpty == false ? "Reviews: \(hotel.reviews!.count)" : "No reviews")
+                                        .font(.caption)
+                                    
+                                        .font(.caption)
+                                }
+                            }
                         }
-                        Text("Rewiews: 100")
-                            .font(.caption)
+                        .padding()
+                        .background(Color.white)
+                        .cornerRadius(20)
+                        .padding()
+                        .shadow(radius:30)
                     }
                 }
-                    
-                Text("Come visit falls for an experience of a lifetime")
-                    .font(.title2)
-                    .foregroundColor(Color.white)
-            }   .padding()
-                .background(Color.gray)
-                .cornerRadius(20)
-                .padding()
-        }.shadow(radius:30)
+            }
+        }
     }
 }
 
